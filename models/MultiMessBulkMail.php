@@ -7,8 +7,8 @@
  * published by the Free Software Foundation; either version 2 of
  * the License, or (at your option) any later version.
  *
- * @author      André Klaßen <andre.klassen@elan-ev.de>
- * @author      Till Glöggler <tgloeggl@uos.de>
+ * @author      Andrï¿½ Klaï¿½en <andre.klassen@elan-ev.de>
+ * @author      Till Glï¿½ggler <tgloeggl@uos.de>
  * @copyright   2012 ELAN e.V. <http://www.elan-ev.de>
  * @license     http://www.gnu.org/licenses/gpl-2.0.html GPL version 2
  * @category    Stud.IP
@@ -19,6 +19,7 @@ require_once 'lib/messaging.inc.php';
 class MultiMessBulkMail extends Messaging
 {
     var $bulk_mail;
+    var $pos = 0;
 
     function sendingEmail($rec_user_id, $snd_user_id, $message, $subject, $message_id)
     {
@@ -55,7 +56,11 @@ class MultiMessBulkMail extends Messaging
             $template->set_attribute('rec_fullname', $rec_fullname);
             $mailhtml = $template->render();
 
-            $this->bulk_mail[md5($message)][getenv('LANG')] = array(
+            if (sizeof($this->bulk_mail[md5($message) . $this->pos][getenv('LANG')]) >= 100) {
+                $this->pos++;
+            }
+            
+            $this->bulk_mail[md5($message) . $this->pos][getenv('LANG')] = array(
                 'text'       => $mailmessage,
                 'html'       => $mailhtml,
                 'title'      => $title,
